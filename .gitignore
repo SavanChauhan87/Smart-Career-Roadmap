@@ -1,0 +1,32 @@
+# Node / Frontend
+node_modules/
+dist/
+.env
+.env.local
+.env.production
+
+# .NET Backend
+backend/bin/
+backend/obj/
+backend/*.user
+backend/.vs/
+
+# Python ML Service
+ml-service/__pycache__/
+ml-service/*.pyc
+ml-service/venv/
+ml-service/.env
+ml-service/models/*.pkl
+
+# Database
+*.sql.bak
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.suo
+*.user
