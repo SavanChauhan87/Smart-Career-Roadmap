@@ -1,0 +1,83 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", sans-serif;
+  --font-display: "Orbitron", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  --color-gold: #FFB800;
+  --color-gold-light: #FFD966;
+  --color-gold-dim: rgba(255, 184, 0, 0.12);
+  --color-bg-primary: #06070F;
+  --color-bg-secondary: #0D0E1C;
+  --color-bg-card: #0F1020;
+  --color-border-gold: rgba(255, 184, 0, 0.18);
+  --color-border-purple: rgba(168, 85, 247, 0.2);
+}
+
+/* Custom styles and overrides */
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-bg-primary);
+  color: #EDE8D8;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Glassmorphism utility */
+.glass-panel {
+  background: rgba(15, 16, 32, 0.6);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--color-border-gold);
+}
+
+.glass-panel:hover {
+  border-color: rgba(255, 184, 0, 0.38);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 184, 0, 0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 184, 0, 0.5);
+}
+
+/* Layout animations */
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(255, 184, 0, 0.4), 0 0 30px rgba(255, 184, 0, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(255, 184, 0, 0.7), 0 0 50px rgba(255, 184, 0, 0.3);
+  }
+}
+
+.avatar-glow {
+  animation: pulseGlow 3.5s ease-in-out infinite;
+}
+
+/* Clean heading text styling with Orbitron */
+h1, h2, h3, h4, h5, h6, .display-font {
+  font-family: var(--font-display);
+}
+
+/* Animated particle background canvas positioning */
+#particle-canvas {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
