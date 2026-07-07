@@ -126,7 +126,7 @@ const Dashboard = ({ userProfile, selectedRole, userSkills, careerRoles, setPage
               />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-3xl font-black font-display text-gold leading-none">
+              <span className="text-3xl font-black font-decorative text-gold leading-none">
                 {animatedScore}
                 <span className="text-sm font-semibold">%</span>
               </span>

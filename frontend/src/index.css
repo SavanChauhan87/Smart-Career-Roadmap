@@ -1,8 +1,9 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Plus Jakarta Sans", sans-serif;
-  --font-display: "Orbitron", sans-serif;
+  --font-sans: "Inter", sans-serif;
+  --font-display: "Cinzel", serif;
+  --font-decorative: "Cinzel Decorative", serif;
   --font-mono: "JetBrains Mono", monospace;
 
   --color-gold: #FFB800;
