@@ -243,18 +243,18 @@ You can use the Markdown text for your slides, render the **Mermaid diagrams** d
         title Smart Career Roadmap Project Phases
         dateFormat  YYYY-MM-DD
         section Phase 1: Prototype
-        React Views & CSS Setup      :active, p1_1, 2026-06-01, 20d
-        Database Schema & pgAdmin   :active, p1_2, 2026-06-15, 10d
+        React Views & CSS Setup      :active, p1_1, 2026-07-01, 10d
+        Database Schema & pgAdmin   :active, p1_2, 2026-07-08, 7d
         section Phase 2: Integration
-        ASP.NET API Controllers     :crit, p2_1, 2026-07-01, 15d
-        PostgreSQL Migrations & EF  :p2_2, 2026-07-10, 10d
+        ASP.NET API Controllers     :crit, p2_1, 2026-07-15, 14d
+        PostgreSQL Migrations & EF  :p2_2, 2026-07-25, 10d
         section Phase 3: ML Engine
-        FastAPI Service Development :p3_1, 2026-07-20, 12d
-        Random Forest Model Training :p3_2, 2026-07-25, 10d
+        FastAPI Service Development :p3_1, 2026-08-04, 10d
+        Random Forest Model Training :p3_2, 2026-08-10, 10d
         section Phase 4: QC & Review
-        Testing and UI Tuning       :p4_1, 2026-08-05, 10d
+        Testing and UI Tuning       :p4_1, 2026-08-20, 12d
     ```
-*   **Draw.io Prompt:** "Create a Gantt chart showing four phases: Phase 1: Interactive Frontend Prototype & Database schema (June), Phase 2: System Integration with ASP.NET Core & PostgreSQL (July), Phase 3: ML Engine Model development with FastAPI (Late July), and Phase 4: QC Testing and UI Fine-Tuning (August)."
+*   **Draw.io Prompt:** "Create a Gantt chart showing four phases running from July 1, 2026 to September 1, 2026: Phase 1: Interactive Frontend Prototype & Database Schema (First half of July), Phase 2: System Integration with ASP.NET Core & PostgreSQL (Late July to Early August), Phase 3: ML Engine Model development with FastAPI (Mid-August), and Phase 4: QC Testing and UI Fine-Tuning (Late August)."
 
 ---
 
