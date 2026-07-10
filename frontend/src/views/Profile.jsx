@@ -38,8 +38,121 @@ const Profile = ({
   };
 
   const printCertificate = () => {
-    window.print();
+    const downloadPDF = () => {
+      const element = document.getElementById('printable-certificate-container');
+      if (!element) return;
+
+      // Create a temporary container clone to format specifically for the PDF
+      const clone = element.cloneNode(true);
+
+      // Force absolute light theme styling on the container clone
+      clone.style.background = '#fffdf9';
+      clone.style.color = '#1a202c';
+      clone.style.border = '8px double #b5843b';
+      clone.style.boxShadow = 'none';
+      clone.style.padding = '3rem';
+      clone.style.width = '800px';
+      clone.style.borderRadius = '0px';
+
+      // 1. Title colors
+      const title = clone.querySelector('.cert-title');
+      if (title) title.style.color = '#b5843b';
+
+      // 2. Subtitle colors
+      const sub = clone.querySelector('.cert-sub');
+      if (sub) sub.style.color = '#718096';
+
+      // 3. Central description text & highlighted spans
+      const text = clone.querySelector('.cert-text');
+      if (text) {
+        text.style.borderColor = '#cbd5e0';
+        text.style.color = '#2d3748';
+        const strongs = text.querySelectorAll('strong');
+        strongs.forEach(s => {
+          s.style.color = '#1a202c';
+        });
+        const goldStrongs = text.querySelectorAll('.cert-gold');
+        goldStrongs.forEach(s => {
+          s.style.color = '#b5843b';
+        });
+        const purpleStrongs = text.querySelectorAll('.cert-purple');
+        purpleStrongs.forEach(s => {
+          s.style.color = '#5a52a3';
+        });
+      }
+
+      // 4. Stats section styles
+      const stats = clone.querySelector('.cert-stats');
+      if (stats) {
+        stats.style.background = '#f7fafc';
+        stats.style.borderColor = '#e2e8f0';
+        const values = stats.querySelectorAll('.cert-stat-val');
+        values.forEach(v => {
+          v.style.color = '#1a202c';
+        });
+        const labels = stats.querySelectorAll('.cert-stat-label');
+        labels.forEach(l => {
+          l.style.color = '#718096';
+        });
+      }
+
+      // 5. Signatures, roles & decorative lines
+      const signatures = clone.querySelectorAll('.cert-signature-name');
+      signatures.forEach(s => {
+        s.style.color = '#2d3748';
+      });
+      const roles = clone.querySelectorAll('.cert-signature-role');
+      roles.forEach(r => {
+        r.style.color = '#718096';
+      });
+      const sigLines = clone.querySelectorAll('.cert-signature-line');
+      sigLines.forEach(l => {
+        l.style.borderColor = '#cbd5e0';
+      });
+      const sigSerif = clone.querySelectorAll('.font-serif');
+      sigSerif.forEach(st => {
+        st.style.color = '#8c6a2c'; // Elegant dark brown/gold for signatures
+      });
+
+      // 6. Seal stamp
+      const seal = clone.querySelector('.cert-seal');
+      if (seal) {
+        seal.style.borderColor = '#b5843b';
+        seal.style.background = '#fffbeb';
+        const sealTexts = seal.querySelectorAll('span, svg');
+        sealTexts.forEach(t => {
+          t.style.color = '#b5843b';
+        });
+      }
+
+      const opt = {
+        margin:       0.5,
+        filename:     `SkillSathi_Certificate_${userProfile.name.replace(/\s+/g, '_')}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { 
+          scale: 2.5, 
+          useCORS: true,
+          logging: false
+        },
+        jsPDF:        { unit: 'in', format: 'letter', orientation: 'landscape' }
+      };
+
+      window.html2pdf().from(clone).set(opt).save();
+    };
+
+    // Load html2pdf dynamically from cdnjs if not already present
+    if (!window.html2pdf) {
+      const script = document.createElement('script');
+      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+      script.onload = () => {
+        downloadPDF();
+      };
+      document.head.appendChild(script);
+    } else {
+      downloadPDF();
+    }
   };
+
 
   // Flatten learning resources from resourcesData that match user's active skills
   const activeSkillNames = new Set(activeSkills.map(s => s.name));
