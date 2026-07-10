@@ -1,5 +1,5 @@
 import React from 'react';
-import { User, Mail, Calendar, Shield, Award, Printer } from 'lucide-react';
+import { User, Mail, Calendar, Shield, Award, Printer, BookOpen } from 'lucide-react';
 
 const Profile = ({ userProfile, userSkills, selectedRole, unlockedAchievements, allAchievements }) => {
   
@@ -109,7 +109,6 @@ const Profile = ({ userProfile, userSkills, selectedRole, unlockedAchievements, 
                 </span>
               </div>
             </div>
-            
             {/* Authenticity Badge */}
             <div className="pt-4 flex items-center justify-center gap-1.5 text-xs text-slate-400">
               <Shield className="w-4 h-4 text-gold" /> Authenticated Registry: SCR-2026-PC
@@ -117,6 +116,79 @@ const Profile = ({ userProfile, userSkills, selectedRole, unlockedAchievements, 
           </div>
         </div>
 
+      </div>
+
+      {/* Skills & Recommended Courses Details */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6 font-sans">
+        {/* Skill Masteries */}
+        <div className="glass-panel p-6 rounded-2xl space-y-4">
+          <h3 className="text-xs uppercase tracking-widest text-slate-400 font-display border-b border-slate-800/40 pb-2 flex items-center gap-2">
+            <Shield className="w-4 h-4 text-gold" /> Active Skill Tree Masteries
+          </h3>
+          
+          {activeSkillsCount > 0 ? (
+            <div className="space-y-4">
+              {userSkills
+                .filter(s => s.level > 0)
+                .map(skill => (
+                  <div key={skill.name} className="flex items-center justify-between">
+                    <div>
+                      <span className="font-semibold text-slate-200 block text-xs">{skill.name}</span>
+                      <span className="text-[10px] text-slate-500 uppercase tracking-wider">{skill.category}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="flex gap-1">
+                        {[1, 2, 3, 4, 5].map(star => (
+                          <span 
+                            key={star} 
+                            className={`text-xs ${star <= skill.level ? 'text-gold' : 'text-slate-700'}`}
+                          >
+                            ★
+                          </span>
+                        ))}
+                      </div>
+                      <span className="bg-gold-dim border border-gold/20 text-gold font-bold text-[10px] px-2 py-0.5 rounded font-display">
+                        Lvl {skill.level}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+            </div>
+          ) : (
+            <p className="text-xs text-slate-500 italic py-4">No skill points allocated yet. Visit the Skill Tree to level up!</p>
+          )}
+        </div>
+
+        {/* Recommended & Completed Loot */}
+        <div className="glass-panel p-6 rounded-2xl space-y-4">
+          <h3 className="text-xs uppercase tracking-widest text-slate-400 font-display border-b border-slate-800/40 pb-2 flex items-center gap-2">
+            <BookOpen className="w-4 h-4 text-purple-400" /> Recommended Loot Items (Courses)
+          </h3>
+          
+          <div className="space-y-3.5">
+            {[
+              { title: 'Advanced React patterns & architecture', platform: 'Frontend Masters', duration: '8 hrs', cost: 'Free', skill: 'React' },
+              { title: 'The Complete PostgreSQL Guide (Database Design)', platform: 'Udemy', duration: '14 hrs', cost: 'Free', skill: 'PostgreSQL' },
+              { title: 'Building RESTful APIs with ASP.NET Core 9', platform: 'Official Docs', duration: '6 hrs', cost: 'Free', skill: 'C# .NET' }
+            ].map((course, idx) => (
+              <div key={idx} className="p-3 rounded-xl bg-slate-950/40 border border-gold/10 hover:border-gold/35 transition-all flex items-center justify-between gap-4">
+                <div className="space-y-1">
+                  <span className="text-xs font-semibold text-slate-200 block leading-tight">{course.title}</span>
+                  <div className="flex items-center gap-2 text-[9px] text-slate-500">
+                    <span className="bg-purple-950/40 border border-purple-800/30 text-purple-400 px-1.5 py-0.25 rounded font-bold">{course.skill}</span>
+                    <span>•</span>
+                    <span>{course.platform}</span>
+                    <span>•</span>
+                    <span>{course.duration}</span>
+                  </div>
+                </div>
+                <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/25 shrink-0">
+                  {course.cost}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );

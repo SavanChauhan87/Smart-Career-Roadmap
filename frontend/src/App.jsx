@@ -667,7 +667,10 @@ function App() {
           </div>
 
           {/* Commander Character Widget */}
-          <div className="m-4 p-5 bg-gradient-to-br from-purple-950/20 to-gold-dim border border-gold/15 rounded-2xl relative overflow-hidden text-center">
+          <div 
+            onClick={() => setCurrentPage('profile')} 
+            className="m-4 p-5 bg-gradient-to-br from-purple-950/20 to-gold-dim border border-gold/15 rounded-2xl relative overflow-hidden text-center cursor-pointer hover:border-gold/35 transition-all group"
+          >
             <div className="relative w-16 h-16 mx-auto mb-3">
               <div className="w-16 h-16 rounded-full bg-slate-900 border-2 border-gold flex items-center justify-center text-3xl avatar-glow">
                 🧙
@@ -763,6 +766,18 @@ function App() {
                 )}
               </button>
             ))}
+            
+            <button
+              onClick={() => {
+                api.clearAuth();
+                setIsLoggedIn(false);
+                setIsRegister(false);
+                setCurrentPage('dashboard');
+              }}
+              className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold font-display tracking-wide border transition-all bg-transparent border-transparent text-red-400 hover:text-red-300 hover:bg-red-500/10 hover:border-red-500/25 mt-4 cursor-pointer"
+            >
+              <span>🚪 Sign Out</span>
+            </button>
           </nav>
         </div>
 
@@ -803,11 +818,14 @@ function App() {
               🔔
               <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-red-500 rounded-full" />
             </button>
-            <div className="flex items-center gap-2 bg-slate-900/40 border border-gold/10 px-3 py-1.5 rounded-full">
+            <div 
+              onClick={() => setCurrentPage('profile')} 
+              className="flex items-center gap-2 bg-slate-900/40 border border-gold/10 px-3 py-1.5 rounded-full hover:bg-gold-dim hover:border-gold/30 transition-all cursor-pointer group"
+            >
               <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-gold to-purple-600 flex items-center justify-center text-xs">
                 🧙
               </div>
-              <span className="text-[10px] font-bold text-slate-300 font-display">{userProfile.name.split(' ')[0]}</span>
+              <span className="text-[10px] font-bold text-slate-300 font-display group-hover:text-gold transition-all">{userProfile.name.split(' ')[0]}</span>
             </div>
           </div>
         </header>
