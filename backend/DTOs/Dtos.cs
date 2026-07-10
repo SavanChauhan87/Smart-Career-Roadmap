@@ -31,6 +31,17 @@ public class UserDto
     public int MaxXp { get; set; }
     public int Streak { get; set; }
     public int BadgesEarned { get; set; }
+    public string? Bio { get; set; }
+    public string? GithubUrl { get; set; }
+    public string? LinkedinUrl { get; set; }
+}
+
+public class UserUpdateRequest
+{
+    public string Name { get; set; } = string.Empty;
+    public string? Bio { get; set; }
+    public string? GithubUrl { get; set; }
+    public string? LinkedinUrl { get; set; }
 }
 
 // ── Skills ─────────────────────────────────────────────────
@@ -80,12 +91,19 @@ public class QuestRequest
 // ── Resources ──────────────────────────────────────────────
 public class ResourceDto
 {
+    public Guid Id { get; set; }
     public string Title { get; set; } = string.Empty;
     public string Platform { get; set; } = string.Empty;
     public string Url { get; set; } = string.Empty;
     public string? Duration { get; set; }
     public string? Cost { get; set; }
     public string SkillName { get; set; } = string.Empty;
+    public bool IsCompleted { get; set; }
+}
+
+public class ResourceProgressRequest
+{
+    public bool IsCompleted { get; set; }
 }
 
 // ── Achievements ───────────────────────────────────────────

@@ -171,7 +171,10 @@ function App() {
     xp: 0,
     maxXp: 3000,
     streak: 0,
-    badgesEarned: 0
+    badgesEarned: 0,
+    bio: '',
+    githubUrl: '',
+    linkedinUrl: ''
   });
 
   // User Skill matrices state (will be fetched from API)
@@ -227,7 +230,10 @@ function App() {
             xp: userData.xp,
             maxXp: userData.maxXp,
             streak: userData.streak,
-            badgesEarned: userData.badgesEarned
+            badgesEarned: userData.badgesEarned,
+            bio: userData.bio || '',
+            githubUrl: userData.githubUrl || '',
+            linkedinUrl: userData.linkedinUrl || ''
           });
         }
 
@@ -267,18 +273,20 @@ function App() {
         }
 
         // Fetch resources
-        const resourcesResult = await api.getResources();
+        const resourcesResult = await api.getResources(null, userId);
         if (resourcesResult && Object.keys(resourcesResult).length > 0) {
           // Transform API response to match frontend shape
           const transformed = {};
           for (const [skillName, items] of Object.entries(resourcesResult)) {
             transformed[skillName] = items.map(r => ({
+              id: r.id,
               title: r.title,
               platform: r.platform,
               url: r.url,
               time: r.duration || 'N/A',
               cost: r.cost || 'Free',
-              type: r.platform === 'YouTube' ? 'video' : r.platform === 'Official Docs' ? 'article' : 'course'
+              type: r.platform === 'YouTube' ? 'video' : r.platform === 'Official Docs' ? 'article' : 'course',
+              isCompleted: r.isCompleted
             }));
           }
           setResourcesData(prev => ({ ...prev, ...transformed }));
@@ -460,11 +468,49 @@ function App() {
             selectedRole={selectedRole}
             unlockedAchievements={unlockedAchievements}
             allAchievements={allAchievements}
+            resourcesData={resourcesData}
             onLogout={() => {
               api.clearAuth();
               setIsLoggedIn(false);
               setIsRegister(false);
               setCurrentPage('dashboard');
+            }}
+            onUpdateProfile={async (updatedData) => {
+              try {
+                const updated = await api.updateUser(userProfile.id, {
+                  ...userProfile,
+                  name: updatedData.name,
+                  bio: updatedData.bio,
+                  githubUrl: updatedData.githubUrl,
+                  linkedinUrl: updatedData.linkedinUrl
+                });
+                setUserProfile(prev => ({
+                  ...prev,
+                  name: updated.name,
+                  bio: updated.bio,
+                  githubUrl: updated.githubUrl,
+                  linkedinUrl: updated.linkedinUrl
+                }));
+              } catch (err) {
+                console.error('Failed to update profile:', err);
+              }
+            }}
+            onToggleResource={async (resourceId, isCompleted) => {
+              try {
+                await api.updateResourceProgress(resourceId, userProfile.id, isCompleted);
+                // Sync local state
+                setResourcesData(prev => {
+                  const next = { ...prev };
+                  for (const [skillName, items] of Object.entries(next)) {
+                    next[skillName] = items.map(item => 
+                      item.id === resourceId ? { ...item, isCompleted } : item
+                    );
+                  }
+                  return next;
+                });
+              } catch (err) {
+                console.error('Failed to update resource completion:', err);
+              }
             }}
           />
         );

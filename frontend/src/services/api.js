@@ -127,9 +127,19 @@ export async function updateQuestProgress(userId, questData) {
 }
 
 // ── Resources Endpoints ───────────────────────────────────
-export async function getResources(skillName) {
-  const query = skillName ? `?skill=${encodeURIComponent(skillName)}` : '';
+export async function getResources(skillName, userId) {
+  const params = [];
+  if (skillName) params.push(`skill=${encodeURIComponent(skillName)}`);
+  if (userId) params.push(`userId=${encodeURIComponent(userId)}`);
+  const query = params.length > 0 ? `?${params.join('&')}` : '';
   return request(`/resources${query}`);
+}
+
+export async function updateResourceProgress(resourceId, userId, isCompleted) {
+  return request(`/resources/${resourceId}/progress?userId=${userId}`, {
+    method: 'POST',
+    body: JSON.stringify({ isCompleted }),
+  });
 }
 
 // ── Achievements Endpoints ────────────────────────────────

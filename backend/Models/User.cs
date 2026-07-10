@@ -34,8 +34,21 @@ public class User
     [Column("last_active")]
     public DateTime LastActive { get; set; } = DateTime.UtcNow;
 
+    [Column("bio")]
+    public string? Bio { get; set; }
+
+    [Column("github_url")]
+    [MaxLength(255)]
+    public string? GithubUrl { get; set; }
+
+    [Column("linkedin_url")]
+    [MaxLength(255)]
+    public string? LinkedinUrl { get; set; }
+
     // Navigation properties
     public ICollection<UserSkill> UserSkills { get; set; } = new List<UserSkill>();
     public ActiveQuest? ActiveQuest { get; set; }
     public ICollection<UserAchievement> UserAchievements { get; set; } = new List<UserAchievement>();
+    public ICollection<UserResource> UserResources { get; set; } = new List<UserResource>();
+    public ICollection<CompletedQuest> CompletedQuests { get; set; } = new List<CompletedQuest>();
 }

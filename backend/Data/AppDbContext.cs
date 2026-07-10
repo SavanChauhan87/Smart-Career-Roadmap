@@ -15,6 +15,8 @@ public class AppDbContext : DbContext
     public DbSet<ActiveQuest> ActiveQuests => Set<ActiveQuest>();
     public DbSet<LearningResource> LearningResources => Set<LearningResource>();
     public DbSet<UserAchievement> UserAchievements => Set<UserAchievement>();
+    public DbSet<UserResource> UserResources => Set<UserResource>();
+    public DbSet<CompletedQuest> CompletedQuests => Set<CompletedQuest>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -91,6 +93,38 @@ public class AppDbContext : DbContext
             entity.HasOne(ua => ua.User)
                   .WithMany(u => u.UserAchievements)
                   .HasForeignKey(ua => ua.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // ── UserResources ──────────────────────────────────────
+        modelBuilder.Entity<UserResource>(entity =>
+        {
+            entity.HasIndex(e => new { e.UserId, e.ResourceId }).IsUnique();
+
+            entity.HasOne(ur => ur.User)
+                  .WithMany(u => u.UserResources)
+                  .HasForeignKey(ur => ur.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(ur => ur.Resource)
+                  .WithMany()
+                  .HasForeignKey(ur => ur.ResourceId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // ── CompletedQuests ────────────────────────────────────
+        modelBuilder.Entity<CompletedQuest>(entity =>
+        {
+            entity.HasIndex(e => new { e.UserId, e.RoleId }).IsUnique();
+
+            entity.HasOne(cq => cq.User)
+                  .WithMany(u => u.CompletedQuests)
+                  .HasForeignKey(cq => cq.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(cq => cq.CareerRole)
+                  .WithMany()
+                  .HasForeignKey(cq => cq.RoleId)
                   .OnDelete(DeleteBehavior.Cascade);
         });
     }

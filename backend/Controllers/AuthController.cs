@@ -57,7 +57,10 @@ public class AuthController : ControllerBase
                 Xp = user.Xp,
                 MaxXp = maxXp,
                 Streak = user.Streak,
-                BadgesEarned = user.UserAchievements.Count
+                BadgesEarned = user.UserAchievements.Count,
+                Bio = user.Bio,
+                GithubUrl = user.GithubUrl,
+                LinkedinUrl = user.LinkedinUrl
             }
         });
     }
@@ -109,9 +112,12 @@ public class AuthController : ControllerBase
                 Email = user.Email,
                 Level = 1,
                 Xp = 0,
-                MaxXp = 3000,
+                MaxXp = 100,
                 Streak = 0,
-                BadgesEarned = 0
+                BadgesEarned = 0,
+                Bio = user.Bio,
+                GithubUrl = user.GithubUrl,
+                LinkedinUrl = user.LinkedinUrl
             }
         });
     }

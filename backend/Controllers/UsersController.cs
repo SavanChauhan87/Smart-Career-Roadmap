@@ -36,7 +36,10 @@ public class UsersController : ControllerBase
             Xp = user.Xp,
             MaxXp = maxXp,
             Streak = user.Streak,
-            BadgesEarned = user.UserAchievements.Count
+            BadgesEarned = user.UserAchievements.Count,
+            Bio = user.Bio,
+            GithubUrl = user.GithubUrl,
+            LinkedinUrl = user.LinkedinUrl
         });
     }
 
@@ -52,6 +55,9 @@ public class UsersController : ControllerBase
         user.Xp = dto.Xp;
         user.Level = dto.Level;
         user.Streak = dto.Streak;
+        user.Bio = dto.Bio;
+        user.GithubUrl = dto.GithubUrl;
+        user.LinkedinUrl = dto.LinkedinUrl;
         user.LastActive = DateTime.UtcNow;
 
         await _db.SaveChangesAsync();
@@ -65,7 +71,10 @@ public class UsersController : ControllerBase
             Xp = user.Xp,
             MaxXp = CalculateMaxXp(user.Level),
             Streak = user.Streak,
-            BadgesEarned = dto.BadgesEarned
+            BadgesEarned = dto.BadgesEarned,
+            Bio = user.Bio,
+            GithubUrl = user.GithubUrl,
+            LinkedinUrl = user.LinkedinUrl
         });
     }
 

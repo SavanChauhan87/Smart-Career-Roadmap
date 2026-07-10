@@ -4,6 +4,8 @@
 
 -- Drop tables if they exist (for easy re-running/resetting)
 DROP TABLE IF EXISTS user_achievements CASCADE;
+DROP TABLE IF EXISTS user_resources CASCADE;
+DROP TABLE IF EXISTS completed_quests CASCADE;
 DROP TABLE IF EXISTS learning_resources CASCADE;
 DROP TABLE IF EXISTS active_quests CASCADE;
 DROP TABLE IF EXISTS role_requirements CASCADE;
@@ -21,7 +23,10 @@ CREATE TABLE users (
     level INT DEFAULT 1,
     xp INT DEFAULT 0,
     streak INT DEFAULT 0,
-    last_active TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    last_active TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    bio TEXT,
+    github_url VARCHAR(255),
+    linkedin_url VARCHAR(255)
 );
 
 -- Skills table
@@ -84,6 +89,25 @@ CREATE TABLE user_achievements (
     achievement_key VARCHAR(100) NOT NULL,
     unlocked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT unique_user_achievement UNIQUE (user_id, achievement_key)
+);
+
+-- User learning resources tracking (completion log)
+CREATE TABLE user_resources (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    resource_id UUID REFERENCES learning_resources(id) ON DELETE CASCADE,
+    is_completed BOOLEAN DEFAULT FALSE,
+    completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT unique_user_resource UNIQUE (user_id, resource_id)
+);
+
+-- User completed quests history log
+CREATE TABLE completed_quests (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    role_id UUID REFERENCES career_roles(id) ON DELETE CASCADE,
+    completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT unique_user_completed_role UNIQUE (user_id, role_id)
 );
 
 -- -------------------------------------------------------------

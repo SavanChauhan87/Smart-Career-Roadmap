@@ -1,17 +1,60 @@
-import React from 'react';
-import { User, Mail, Calendar, Shield, Award, Printer, BookOpen } from 'lucide-react';
+import React, { useState } from 'react';
+import { User, Mail, Calendar, Shield, Award, Printer, BookOpen, Edit2, Check, ExternalLink } from 'lucide-react';
 
-const Profile = ({ userProfile, userSkills, selectedRole, unlockedAchievements, allAchievements, onLogout }) => {
-  
+const Profile = ({ 
+  userProfile, 
+  userSkills, 
+  selectedRole, 
+  unlockedAchievements, 
+  allAchievements, 
+  resourcesData = {}, 
+  onLogout,
+  onUpdateProfile,
+  onToggleResource
+}) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editName, setEditName] = useState(userProfile.name);
+  const [editBio, setEditBio] = useState(userProfile.bio || '');
+  const [editGithub, setEditGithub] = useState(userProfile.githubUrl || '');
+  const [editLinkedin, setEditLinkedin] = useState(userProfile.linkedinUrl || '');
+
   // Calculate average proficiency level
-  const activeSkillsCount = userSkills.filter(s => s.level > 0).length;
+  const activeSkills = userSkills.filter(s => s.level > 0);
+  const activeSkillsCount = activeSkills.length;
   const averageProficiency = activeSkillsCount > 0 
-    ? (userSkills.reduce((acc, curr) => acc + curr.level, 0) / activeSkillsCount).toFixed(1) 
+    ? (activeSkills.reduce((acc, curr) => acc + curr.level, 0) / activeSkillsCount).toFixed(1) 
     : '0.0';
+
+  const handleSave = async () => {
+    if (onUpdateProfile) {
+      await onUpdateProfile({
+        name: editName,
+        bio: editBio,
+        githubUrl: editGithub,
+        linkedinUrl: editLinkedin
+      });
+    }
+    setIsEditing(false);
+  };
 
   const printCertificate = () => {
     window.print();
   };
+
+  // Flatten learning resources from resourcesData that match user's active skills
+  const activeSkillNames = new Set(activeSkills.map(s => s.name));
+  const filteredCourses = [];
+  
+  Object.entries(resourcesData).forEach(([skillName, items]) => {
+    if (activeSkillNames.has(skillName)) {
+      items.forEach(item => {
+        filteredCourses.push({
+          ...item,
+          skillName
+        });
+      });
+    }
+  });
 
   return (
     <div className="space-y-6">
@@ -26,12 +69,21 @@ const Profile = ({ userProfile, userSkills, selectedRole, unlockedAchievements, 
           </p>
         </div>
         
-        <button 
-          onClick={printCertificate}
-          className="flex items-center justify-center gap-2 bg-gold hover:bg-gold-light text-bg-primary font-bold font-display text-xs px-4 py-2.5 rounded-xl transition-all shadow-lg hover:shadow-[0_0_15px_rgba(255,184,0,0.3)] shrink-0"
-        >
-          <Printer className="w-4 h-4" /> Export Certificate
-        </button>
+        <div className="flex gap-2">
+          <button 
+            onClick={() => setIsEditing(!isEditing)}
+            className="flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-850 border border-gold/30 text-gold font-bold font-display text-xs px-4 py-2.5 rounded-xl transition-all cursor-pointer"
+          >
+            <Edit2 className="w-4 h-4" /> {isEditing ? 'Cancel Edit' : 'Edit Registry'}
+          </button>
+          
+          <button 
+            onClick={printCertificate}
+            className="flex items-center justify-center gap-2 bg-gold hover:bg-gold-light text-bg-primary font-bold font-display text-xs px-4 py-2.5 rounded-xl transition-all shadow-lg hover:shadow-[0_0_15px_rgba(255,184,0,0.3)] shrink-0 cursor-pointer"
+          >
+            <Printer className="w-4 h-4" /> Export Certificate
+          </button>
+        </div>
       </div>
 
       {/* Grid */}
@@ -44,22 +96,97 @@ const Profile = ({ userProfile, userSkills, selectedRole, unlockedAchievements, 
           </h3>
 
           <div className="space-y-4 text-sm font-sans">
-            <div>
-              <span className="text-xs text-slate-400 block mb-1">Guild Member:</span>
-              <span className="font-semibold text-slate-200 block">{userProfile.name}</span>
-            </div>
-            <div>
-              <span className="text-xs text-slate-400 block mb-1">Registrar Email:</span>
-              <span className="font-semibold text-slate-200 block">{userProfile.email}</span>
-            </div>
-            <div>
-              <span className="text-xs text-slate-400 block mb-1">Registered On:</span>
-              <span className="font-semibold text-slate-200 block">July 7, 2026</span>
-            </div>
-            <div>
-              <span className="text-xs text-slate-400 block mb-1">Educational Background:</span>
-              <span className="font-semibold text-slate-200 block">B.Tech CSE - Semester 7</span>
-            </div>
+            {isEditing ? (
+              <div className="space-y-3.5">
+                <div>
+                  <label className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider block mb-1">Adventurer Name</label>
+                  <input 
+                    type="text"
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                    className="w-full bg-slate-950/60 border border-gold/20 rounded-xl px-3 py-1.5 text-xs text-slate-100 focus:outline-none focus:border-gold/60"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider block mb-1">Guild Member Bio</label>
+                  <textarea 
+                    value={editBio}
+                    onChange={(e) => setEditBio(e.target.value)}
+                    placeholder="Tell the guild about your goals..."
+                    className="w-full bg-slate-950/60 border border-gold/20 rounded-xl px-3 py-1.5 text-xs text-slate-100 focus:outline-none focus:border-gold/60 h-20 resize-none"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider block mb-1">GitHub Profile Link</label>
+                  <input 
+                    type="text"
+                    value={editGithub}
+                    onChange={(e) => setEditGithub(e.target.value)}
+                    placeholder="https://github.com/username"
+                    className="w-full bg-slate-950/60 border border-gold/20 rounded-xl px-3 py-1.5 text-xs text-slate-100 focus:outline-none focus:border-gold/60"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider block mb-1">LinkedIn Profile Link</label>
+                  <input 
+                    type="text"
+                    value={editLinkedin}
+                    onChange={(e) => setEditLinkedin(e.target.value)}
+                    placeholder="https://linkedin.com/in/username"
+                    className="w-full bg-slate-950/60 border border-gold/20 rounded-xl px-3 py-1.5 text-xs text-slate-100 focus:outline-none focus:border-gold/60"
+                  />
+                </div>
+                <button 
+                  onClick={handleSave}
+                  className="w-full mt-2 bg-gradient-to-r from-gold to-amber-500 text-bg-primary font-bold font-display text-xs py-2 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                >
+                  <Check className="w-4 h-4" /> Save Guild Records
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <div>
+                  <span className="text-xs text-slate-400 block mb-1">Guild Member:</span>
+                  <span className="font-semibold text-slate-200 block text-sm">{userProfile.name}</span>
+                </div>
+                <div>
+                  <span className="text-xs text-slate-400 block mb-1">Registrar Email:</span>
+                  <span className="font-semibold text-slate-200 block">{userProfile.email}</span>
+                </div>
+                <div>
+                  <span className="text-xs text-slate-400 block mb-1">Member Bio:</span>
+                  <span className="text-slate-300 block text-xs leading-relaxed italic bg-slate-950/20 border border-gold/5 p-2.5 rounded-xl">
+                    {userProfile.bio || 'Adventurer has not written a bio yet.'}
+                  </span>
+                </div>
+                <div className="flex gap-3 pt-2">
+                  {userProfile.githubUrl && (
+                    <a 
+                      href={userProfile.githubUrl} 
+                      target="_blank" 
+                      rel="noreferrer"
+                      className="flex items-center gap-1 text-xs text-gold hover:text-gold-light transition-all animate-fadeIn"
+                    >
+                      🌐 GitHub
+                    </a>
+                  )}
+                  {userProfile.linkedinUrl && (
+                    <a 
+                      href={userProfile.linkedinUrl} 
+                      target="_blank" 
+                      rel="noreferrer"
+                      className="flex items-center gap-1 text-xs text-gold hover:text-gold-light transition-all animate-fadeIn"
+                    >
+                      🔗 LinkedIn
+                    </a>
+                  )}
+                </div>
+                <div>
+                  <span className="text-xs text-slate-400 block mb-1">Educational Background:</span>
+                  <span className="font-semibold text-slate-200 block">B.Tech CSE - Semester 7</span>
+                </div>
+              </div>
+            )}
 
             <div className="pt-4 border-t border-slate-800/40">
               <button 
@@ -111,7 +238,7 @@ const Profile = ({ userProfile, userSkills, selectedRole, unlockedAchievements, 
               </div>
               <div className="text-center">
                 <span className="text-sm font-bold text-slate-100 font-display block">
-                  {selectedRole.split(' ')[0]}
+                  {selectedRole ? selectedRole.split(' ')[0] : 'None'}
                 </span>
                 <span className="text-[9px] uppercase text-slate-400 tracking-wider font-sans block mt-1">
                   Active Quest
@@ -174,29 +301,62 @@ const Profile = ({ userProfile, userSkills, selectedRole, unlockedAchievements, 
             <BookOpen className="w-4 h-4 text-purple-400" /> Recommended Loot Items (Courses)
           </h3>
           
-          <div className="space-y-3.5">
-            {[
-              { title: 'Advanced React patterns & architecture', platform: 'Frontend Masters', duration: '8 hrs', cost: 'Free', skill: 'React' },
-              { title: 'The Complete PostgreSQL Guide (Database Design)', platform: 'Udemy', duration: '14 hrs', cost: 'Free', skill: 'PostgreSQL' },
-              { title: 'Building RESTful APIs with ASP.NET Core 9', platform: 'Official Docs', duration: '6 hrs', cost: 'Free', skill: 'C# .NET' }
-            ].map((course, idx) => (
-              <div key={idx} className="p-3 rounded-xl bg-slate-950/40 border border-gold/10 hover:border-gold/35 transition-all flex items-center justify-between gap-4">
-                <div className="space-y-1">
-                  <span className="text-xs font-semibold text-slate-200 block leading-tight">{course.title}</span>
-                  <div className="flex items-center gap-2 text-[9px] text-slate-500">
-                    <span className="bg-purple-950/40 border border-purple-800/30 text-purple-400 px-1.5 py-0.25 rounded font-bold">{course.skill}</span>
-                    <span>•</span>
-                    <span>{course.platform}</span>
-                    <span>•</span>
-                    <span>{course.duration}</span>
+          {filteredCourses.length > 0 ? (
+            <div className="space-y-3.5 max-h-[350px] overflow-y-auto pr-1">
+              {filteredCourses.map((course, idx) => (
+                <div 
+                  key={course.id || idx} 
+                  className={`p-3 rounded-xl transition-all flex items-center justify-between gap-4 border ${
+                    course.isCompleted 
+                      ? 'bg-emerald-500/5 border-emerald-500/20 hover:border-emerald-500/35' 
+                      : 'bg-slate-950/40 border-gold/10 hover:border-gold/35'
+                  }`}
+                >
+                  <div className="flex items-start gap-2.5">
+                    <input 
+                      type="checkbox"
+                      checked={!!course.isCompleted}
+                      onChange={(e) => onToggleResource && onToggleResource(course.id, e.target.checked)}
+                      className="mt-1 w-3.5 h-3.5 rounded border-gold/30 text-emerald-500 focus:ring-emerald-500/30 cursor-pointer"
+                    />
+                    <div className="space-y-1">
+                      <span className={`text-xs font-semibold block leading-tight ${
+                        course.isCompleted ? 'text-slate-400 line-through' : 'text-slate-200'
+                      }`}>
+                        {course.title}
+                      </span>
+                      <div className="flex items-center gap-2 text-[9px] text-slate-500">
+                        <span className="bg-purple-950/40 border border-purple-800/30 text-purple-400 px-1.5 py-0.25 rounded font-bold">{course.skillName}</span>
+                        <span>•</span>
+                        <span>{course.platform}</span>
+                        <span>•</span>
+                        <span>{course.time}</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/25 shrink-0">
+                      {course.cost}
+                    </span>
+                    {course.url && (
+                      <a 
+                        href={course.url} 
+                        target="_blank" 
+                        rel="noreferrer" 
+                        className="text-slate-500 hover:text-gold transition-all"
+                        title="Open Resource link"
+                      >
+                        <ExternalLink className="w-3.5 h-3.5" />
+                      </a>
+                    )}
                   </div>
                 </div>
-                <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/25 shrink-0">
-                  {course.cost}
-                </span>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-xs text-slate-500 italic py-4">Activate skill levels in your Skill Tree to unlock course recommendations!</p>
+          )}
         </div>
       </div>
     </div>
