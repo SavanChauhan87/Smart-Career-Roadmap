@@ -460,6 +460,12 @@ function App() {
             selectedRole={selectedRole}
             unlockedAchievements={unlockedAchievements}
             allAchievements={allAchievements}
+            onLogout={() => {
+              api.clearAuth();
+              setIsLoggedIn(false);
+              setIsRegister(false);
+              setCurrentPage('dashboard');
+            }}
           />
         );
       default:

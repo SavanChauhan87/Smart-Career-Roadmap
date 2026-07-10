@@ -1,7 +1,7 @@
 import React from 'react';
 import { User, Mail, Calendar, Shield, Award, Printer, BookOpen } from 'lucide-react';
 
-const Profile = ({ userProfile, userSkills, selectedRole, unlockedAchievements, allAchievements }) => {
+const Profile = ({ userProfile, userSkills, selectedRole, unlockedAchievements, allAchievements, onLogout }) => {
   
   // Calculate average proficiency level
   const activeSkillsCount = userSkills.filter(s => s.level > 0).length;
@@ -59,6 +59,15 @@ const Profile = ({ userProfile, userSkills, selectedRole, unlockedAchievements, 
             <div>
               <span className="text-xs text-slate-400 block mb-1">Educational Background:</span>
               <span className="font-semibold text-slate-200 block">B.Tech CSE - Semester 7</span>
+            </div>
+
+            <div className="pt-4 border-t border-slate-800/40">
+              <button 
+                onClick={onLogout}
+                className="w-full flex items-center justify-center gap-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/25 hover:border-red-500/45 text-red-400 font-semibold font-display text-xs py-2 rounded-xl transition-all cursor-pointer"
+              >
+                🚪 Sign Out of Guild
+              </button>
             </div>
           </div>
         </div>
