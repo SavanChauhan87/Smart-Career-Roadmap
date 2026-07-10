@@ -82,3 +82,153 @@ h1, h2, h3, h4, h5, h6, .display-font {
   pointer-events: none;
   z-index: 0;
 }
+
+/* ═══════════════════════ LIGHT THEME OVERRIDES ═══════════════════════ */
+.light-theme {
+  --color-bg-primary: #FCFAF2;
+  --color-bg-secondary: #F3ECE0;
+  --color-bg-card: rgba(255, 255, 255, 0.85);
+  --color-border-gold: rgba(181, 132, 59, 0.28);
+  --color-border-purple: rgba(123, 47, 190, 0.22);
+  
+  color: #38302B !important;
+}
+
+/* Light Mode Global Text overrides */
+.light-theme .text-slate-100,
+.light-theme .text-slate-200,
+.light-theme .text-slate-350,
+.light-theme .text-slate-300,
+.light-theme .text-slate-400,
+.light-theme .text-slate-450,
+.light-theme .text-\[\#EDE8D8\],
+.light-theme p,
+.light-theme label {
+  color: #4A4038 !important;
+}
+
+.light-theme .text-slate-500,
+.light-theme .text-slate-600 {
+  color: #8A7E74 !important;
+}
+
+.light-theme h1,
+.light-theme h2,
+.light-theme h3,
+.light-theme h4,
+.light-theme h5,
+.light-theme h6,
+.light-theme .font-display,
+.light-theme strong,
+.light-theme b {
+  color: #2D251E !important;
+}
+
+.light-theme .text-gold-light,
+.light-theme .text-gold {
+  color: #8C6221 !important;
+}
+
+.light-theme .glass-panel {
+  background: rgba(255, 255, 255, 0.82) !important;
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(181, 132, 59, 0.28) !important;
+  box-shadow: 0 10px 30px -10px rgba(139, 115, 85, 0.15) !important;
+}
+
+.light-theme .glass-panel:hover {
+  border-color: rgba(181, 132, 59, 0.5) !important;
+  box-shadow: 0 12px 35px -8px rgba(139, 115, 85, 0.22) !important;
+}
+
+.light-theme header {
+  background-color: rgba(252, 250, 242, 0.85) !important;
+  border-bottom: 1px solid rgba(181, 132, 59, 0.18) !important;
+}
+
+.light-theme aside {
+  background: linear-gradient(180deg, #F8F5EB 0%, #EFEBE0 100%) !important;
+  border-right: 1px solid rgba(181, 132, 59, 0.2) !important;
+}
+
+/* Sidebar Logo & Widgets */
+.light-theme .sb-logo-text,
+.light-theme .sb-logo-text small {
+  color: #8C6221 !important;
+}
+
+/* Background tracks & custom blocks */
+.light-theme .bg-slate-950,
+.light-theme .bg-slate-900,
+.light-theme .bg-slate-900\/60,
+.light-theme .bg-slate-900\/40,
+.light-theme .bg-gold-dim,
+.light-theme .bg-purple-950\/30,
+.light-theme .bg-gold-dim\/30 {
+  background-color: #EFECE3 !important;
+  border-color: rgba(181, 132, 59, 0.15) !important;
+}
+
+.light-theme .text-purple-400 {
+  color: #7B2FBE !important;
+}
+
+/* Active navigation links custom hover */
+.light-theme .border-gold\/45 {
+  border-color: rgba(181, 132, 59, 0.35) !important;
+  background: rgba(181, 132, 59, 0.06) !important;
+  color: #8C6221 !important;
+}
+
+/* Custom button hover states in light mode */
+.light-theme button:not([type="submit"]):hover {
+  background-color: rgba(181, 132, 59, 0.08) !important;
+  color: #8C6221 !important;
+  border-color: rgba(181, 132, 59, 0.4) !important;
+}
+
+/* Selected competency ratings button styles */
+.light-theme .bg-gold {
+  background-color: #B5843B !important;
+  border-color: #B5843B !important;
+  color: #FFFFFF !important;
+}
+
+.light-theme .bg-slate-950\/40 {
+  background-color: rgba(255, 255, 255, 0.6) !important;
+  border-color: #D6D0C2 !important;
+  color: #4A4038 !important;
+}
+
+/* Input Fields on Login page */
+.light-theme input {
+  background-color: #FFFFFF !important;
+  border: 1px solid rgba(181, 132, 59, 0.28) !important;
+  color: #2D251E !important;
+}
+
+.light-theme input:focus {
+  border-color: #B5843B !important;
+  box-shadow: 0 0 8px rgba(181, 132, 59, 0.15) !important;
+}
+
+/* Glow animations adjusted for soft warm shadow */
+.light-theme .avatar-glow {
+  box-shadow: 0 0 18px rgba(181, 132, 59, 0.3), 0 0 40px rgba(181, 132, 59, 0.1) !important;
+  border-color: #B5843B !important;
+}
+
+.light-theme .xp-track,
+.light-theme .h-1\.5 {
+  background-color: #E2DFD6 !important;
+}
+
+.light-theme .xp-fill,
+.light-theme .attr-fill {
+  box-shadow: 0 0 6px rgba(181, 132, 59, 0.2) !important;
+}
+
+.light-theme .text-\[\#EDE8D8\] {
+  color: #2D251E !important;
+}
+

@@ -9,7 +9,8 @@ import Achievements from './views/Achievements';
 import Profile from './views/Profile';
 import { 
   Shield, Target, Award, BookOpen, User, 
-  Menu, X, Bell, LogIn, Lock, Mail, Edit3, Map 
+  Menu, X, Bell, LogIn, Lock, Mail, Edit3, Map,
+  Sun, Moon
 } from 'lucide-react';
 
 // Static Data definitions
@@ -151,6 +152,10 @@ function App() {
   const [currentPage, setCurrentPage] = useState('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [selectedRole, setSelectedRole] = useState('Frontend Developer');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [email, setEmail] = useState('savan@example.com');
+  const [password, setPassword] = useState('password123');
+  const [theme, setTheme] = useState('dark');
   
   // Game user profile state
   const [userProfile, setUserProfile] = useState({
@@ -333,8 +338,84 @@ function App() {
   // Convert progress width percentage
   const xpPercentage = (userProfile.xp / userProfile.maxXp) * 100;
 
+  if (!isLoggedIn) {
+    return (
+      <div className={`flex items-center justify-center min-h-screen text-[#EDE8D8] relative font-sans ${theme === 'light' ? 'light-theme' : ''} bg-[#06070F]`}>
+        <ParticleBackground />
+        
+        {/* Theme toggle on login page */}
+        <div className="absolute top-6 right-6 z-20">
+          <button 
+            onClick={() => setTheme(prev => prev === 'dark' ? 'light' : 'dark')}
+            className="w-9 h-9 rounded-xl bg-slate-900/60 border border-gold/20 hover:bg-gold-dim flex items-center justify-center text-slate-400 hover:text-gold transition-all cursor-pointer"
+            title="Toggle Light/Dark Theme"
+          >
+            {theme === 'dark' ? <Sun className="w-5 h-5 text-gold" /> : <Moon className="w-5 h-5 text-purple-400" />}
+          </button>
+        </div>
+
+        <div className="glass-panel max-w-md w-full p-8 rounded-2xl border border-gold/20 shadow-2xl relative z-10 mx-4">
+          <div className="text-center mb-6">
+            <span className="w-12 h-12 rounded-xl bg-gradient-to-tr from-gold to-purple-600 flex items-center justify-center shadow-[0_0_15px_rgba(255,184,0,0.5)] text-2xl mx-auto mb-4">
+              ⚔️
+            </span>
+            <h1 className="text-2xl font-bold font-display text-gold-light tracking-wide">
+              SMART CAREER ROADMAP
+            </h1>
+            <p className="text-[10px] text-slate-400 uppercase tracking-widest mt-1.5 font-sans">
+              Enter the Adventurer Guild
+            </p>
+          </div>
+
+          <form onSubmit={(e) => { e.preventDefault(); setIsLoggedIn(true); }} className="space-y-4">
+            <div className="space-y-1">
+              <label className="text-[10px] text-slate-450 font-sans block font-semibold uppercase tracking-wider">Guild Member Email</label>
+              <div className="relative">
+                <input 
+                  type="email" 
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="name@guild.com"
+                  className="w-full bg-slate-950/60 border border-gold/20 rounded-xl px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-gold/60 transition-all font-sans"
+                />
+                <span className="absolute right-3.5 top-3 text-slate-500"><Mail className="w-4 h-4" /></span>
+              </div>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-[10px] text-slate-455 font-sans block font-semibold uppercase tracking-wider">Secret Access Key</label>
+              <div className="relative">
+                <input 
+                  type="password" 
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••••••"
+                  className="w-full bg-slate-950/60 border border-gold/20 rounded-xl px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-650 focus:outline-none focus:border-gold/60 transition-all font-sans"
+                />
+                <span className="absolute right-3.5 top-3 text-slate-500"><Lock className="w-4 h-4" /></span>
+              </div>
+            </div>
+
+            <button 
+              type="submit" 
+              className="w-full mt-2 bg-gradient-to-r from-gold to-amber-500 hover:from-gold-light hover:to-gold text-[#06070F] font-bold font-display tracking-wider py-3 rounded-xl transition-all shadow-lg hover:shadow-[0_0_15px_rgba(255,184,0,0.3)] cursor-pointer flex items-center justify-center gap-2"
+            >
+              ENTER GUILD <LogIn className="w-4 h-4" />
+            </button>
+          </form>
+
+          <div className="mt-6 text-center text-[10px] text-slate-500 border-t border-gold/10 pt-4 font-sans">
+            First login requirement enabled. Enter your credentials to unlock the dashboard.
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex min-h-screen text-[#EDE8D8] relative font-sans">
+    <div className={`flex min-h-screen text-[#EDE8D8] relative font-sans ${theme === 'light' ? 'light-theme' : ''} bg-[#06070F]`}>
       {/* Dynamic Starfield canvas */}
       <ParticleBackground />
 
@@ -492,6 +573,15 @@ function App() {
           </div>
 
           <div className="flex items-center gap-4">
+            {/* Theme Toggle Button */}
+            <button 
+              onClick={() => setTheme(prev => prev === 'dark' ? 'light' : 'dark')}
+              className="w-9 h-9 rounded-xl bg-slate-900/60 border border-gold/20 hover:bg-gold-dim flex items-center justify-center text-slate-400 hover:text-gold transition-all cursor-pointer"
+              title="Toggle Light/Dark Theme"
+            >
+              {theme === 'dark' ? <Sun className="w-4 h-4 text-gold" /> : <Moon className="w-4 h-4 text-purple-400" />}
+            </button>
+
             <button className="w-9 h-9 rounded-xl bg-slate-900/60 border border-gold/20 hover:bg-gold-dim flex items-center justify-center text-slate-400 hover:text-gold transition-all relative">
               🔔
               <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-red-500 rounded-full" />
