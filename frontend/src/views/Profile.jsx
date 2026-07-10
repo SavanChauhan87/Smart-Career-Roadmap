@@ -200,54 +200,100 @@ const Profile = ({
         </div>
 
         {/* Certificate Display Panel */}
-        <div className="lg:col-span-2 glass-panel p-8 rounded-2xl border-2 border-dashed border-gold/40 bg-gradient-to-b from-bg-card to-purple-950/5 relative overflow-hidden">
+        <div 
+          id="printable-certificate-container"
+          className="lg:col-span-2 glass-panel p-8 rounded-2xl border-2 border-dashed border-gold/40 bg-gradient-to-b from-bg-card to-purple-950/5 relative overflow-hidden"
+        >
+          {/* Ornate Gold Background Elements */}
           <div className="absolute top-0 right-0 w-32 h-32 opacity-10 bg-radial-gradient from-gold to-transparent" />
+          <div className="absolute bottom-0 left-0 w-32 h-32 opacity-10 bg-radial-gradient from-purple-600 to-transparent" />
           
           <div className="text-center space-y-6">
-            <span className="text-3xl">📜</span>
-            <div className="space-y-2">
-              <h2 className="text-lg font-bold text-gold font-display tracking-widest">
-                CERTIFICATE OF GUILD STANDING
+            <div className="space-y-1.5">
+              <span className="text-3xl block filter drop-shadow-[0_0_8px_rgba(255,184,0,0.4)]">📜</span>
+              <h2 className="text-xl md:text-2xl font-bold text-gold font-display tracking-widest cert-title">
+                CERTIFICATE OF ACHIEVEMENTS
               </h2>
-              <span className="text-xs text-slate-400 block tracking-widest font-sans italic">
-                Issued by the Smart Career Roadmap Guild
+              <span className="text-xs text-slate-400 block tracking-widest font-sans italic cert-sub">
+                Issued by SkillSathi Credentials Register
               </span>
             </div>
 
-            <div className="max-w-md mx-auto text-sm text-slate-300 font-sans leading-relaxed border-t border-b border-slate-800/40 py-6">
-              This credentials card verifies that <strong className="text-gold font-display text-xs">{userProfile.name.toUpperCase()}</strong> has reached the standing tier of <strong className="text-purple-400 font-display text-xs">LEVEL {userProfile.level}</strong> and holds an average skill rating of <strong className="text-cyan-400">{averageProficiency}/5.0</strong> across all active disciplines.
+            <div className="max-w-md mx-auto text-sm text-slate-300 font-sans leading-relaxed border-t border-b border-slate-800/40 py-6 cert-text">
+              This official credential registry certifies that <strong className="text-gold font-display text-xs cert-gold">{userProfile.name.toUpperCase()}</strong> has successfully reached the standing tier of <strong className="text-purple-400 font-display text-xs cert-purple">LEVEL {userProfile.level}</strong> and holds an average capability score of <strong className="text-cyan-400">{averageProficiency}/5.0</strong> across all mapped career domains on <strong className="text-gold">SkillSathi</strong>.
             </div>
 
             {/* Micro Stats inside Certificate */}
-            <div className="grid grid-cols-3 gap-4 max-w-sm mx-auto">
+            <div className="grid grid-cols-3 gap-4 max-w-sm mx-auto cert-stats bg-slate-900/30 border border-gold/10 p-3 rounded-xl">
               <div className="text-center">
-                <span className="text-sm font-bold text-slate-100 font-display block">
+                <span className="text-sm font-bold text-slate-150 font-display block cert-stat-val">
                   {activeSkillsCount}
                 </span>
-                <span className="text-[9px] uppercase text-slate-400 tracking-wider font-sans block mt-1">
-                  Skills
+                <span className="text-[9px] uppercase text-slate-450 tracking-wider font-sans block mt-1 cert-stat-label">
+                  Skills Mastered
                 </span>
               </div>
               <div className="text-center">
-                <span className="text-sm font-bold text-slate-100 font-display block">
+                <span className="text-sm font-bold text-slate-150 font-display block cert-stat-val">
                   {unlockedAchievements.length}
                 </span>
-                <span className="text-[9px] uppercase text-slate-400 tracking-wider font-sans block mt-1">
-                  Badges
+                <span className="text-[9px] uppercase text-slate-450 tracking-wider font-sans block mt-1 cert-stat-label">
+                  Trophies Earned
                 </span>
               </div>
               <div className="text-center">
-                <span className="text-sm font-bold text-slate-100 font-display block">
+                <span className="text-sm font-bold text-slate-150 font-display block cert-stat-val">
                   {selectedRole ? selectedRole.split(' ')[0] : 'None'}
                 </span>
-                <span className="text-[9px] uppercase text-slate-400 tracking-wider font-sans block mt-1">
+                <span className="text-[9px] uppercase text-slate-450 tracking-wider font-sans block mt-1 cert-stat-label">
                   Active Quest
                 </span>
               </div>
             </div>
+
+            {/* Professional Signatures & Stamp Layout */}
+            <div className="grid grid-cols-3 items-center gap-4 pt-6 border-t border-slate-800/30">
+              {/* Savan Chauhan signature line */}
+              <div className="text-center space-y-1">
+                <div className="text-gold-light italic font-serif text-sm h-6 select-none font-bold tracking-wider">
+                  Savan Chauhan
+                </div>
+                <div className="w-24 mx-auto border-t border-slate-700/50 cert-signature-line" />
+                <div className="text-[9px] font-bold text-slate-400 uppercase tracking-widest cert-signature-name">
+                  Savan Chauhan
+                </div>
+                <div className="text-[8px] text-slate-500 font-sans cert-signature-role">
+                  Founder, SkillSathi
+                </div>
+              </div>
+
+              {/* Center Seal Stamp */}
+              <div className="flex justify-center">
+                <div className="w-16 h-16 rounded-full border-2 border-dashed border-gold/45 bg-gold-dim/15 flex flex-col items-center justify-center text-center shadow-[0_0_10px_rgba(255,184,0,0.1)] cert-seal select-none cursor-default">
+                  <span className="text-[8px] font-black text-gold font-display uppercase tracking-widest leading-none">OFFICIAL</span>
+                  <Award className="w-4 h-4 text-gold my-0.5" />
+                  <span className="text-[7px] text-gold font-sans uppercase tracking-widest leading-none">SEAL</span>
+                </div>
+              </div>
+
+              {/* Prince Jadav signature line */}
+              <div className="text-center space-y-1">
+                <div className="text-gold-light italic font-serif text-sm h-6 select-none font-bold tracking-wider">
+                  Prince Jadav
+                </div>
+                <div className="w-24 mx-auto border-t border-slate-700/50 cert-signature-line" />
+                <div className="text-[9px] font-bold text-slate-400 uppercase tracking-widest cert-signature-name">
+                  Prince Jadav
+                </div>
+                <div className="text-[8px] text-slate-500 font-sans cert-signature-role">
+                  Co-Founder, SkillSathi
+                </div>
+              </div>
+            </div>
+
             {/* Authenticity Badge */}
-            <div className="pt-4 flex items-center justify-center gap-1.5 text-xs text-slate-400">
-              <Shield className="w-4 h-4 text-gold" /> Authenticated Registry: SCR-2026-PC
+            <div className="pt-3 flex items-center justify-center gap-1.5 text-[9px] text-slate-500">
+              <Shield className="w-3.5 h-3.5 text-gold/60" /> Authenticated Registry: SKILLSATHI-2026-REG
             </div>
           </div>
         </div>

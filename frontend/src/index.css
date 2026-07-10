@@ -232,3 +232,120 @@ h1, h2, h3, h4, h5, h6, .display-font {
   color: #2D251E !important;
 }
 
+/* ─────────────────────────────────────────────────────────────
+   Print Overrides for PDF Certificate Export
+   ───────────────────────────────────────────────────────────── */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #0c0d19 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Hide everything except the certificate container */
+  #printable-certificate-container {
+    position: fixed !important;
+    left: 50% !important;
+    top: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: 90% !important;
+    max-width: 900px !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 3rem !important;
+    background: #fffdf9 !important;
+    border: 8px double #b5843b !important;
+    color: #2d3748 !important;
+    box-shadow: none !important;
+    visibility: visible !important;
+    z-index: 99999 !important;
+  }
+
+  body > div, 
+  aside, 
+  header, 
+  main,
+  .glass-panel,
+  button,
+  form,
+  nav,
+  input,
+  h1 {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  #printable-certificate-container * {
+    visibility: visible !important;
+    color: #1a202c !important;
+  }
+
+  /* Specific element coloring for print contrast */
+  .cert-title {
+    color: #b5843b !important;
+    font-size: 2.25rem !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.1em !important;
+  }
+
+  .cert-sub {
+    color: #718096 !important;
+    font-size: 0.875rem !important;
+    font-style: italic !important;
+  }
+
+  .cert-text {
+    border-color: #e2e8f0 !important;
+    color: #2d3748 !important;
+    line-height: 1.8 !important;
+    padding: 2rem 0 !important;
+  }
+
+  .cert-gold {
+    color: #b5843b !important;
+    font-weight: 700 !important;
+  }
+
+  .cert-purple {
+    color: #5a52a3 !important;
+    font-weight: 700 !important;
+  }
+
+  .cert-stats {
+    background: #f7fafc !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 12px !important;
+    padding: 1rem !important;
+  }
+
+  .cert-stat-label {
+    color: #718096 !important;
+  }
+
+  .cert-signature-line {
+    border-color: #cbd5e0 !important;
+  }
+
+  .cert-signature-name {
+    color: #2d3748 !important;
+    font-weight: 700 !important;
+  }
+
+  .cert-signature-role {
+    color: #718096 !important;
+    font-size: 0.75rem !important;
+  }
+
+  .cert-seal {
+    border: 3px dashed #b5843b !important;
+    background: #fffbeb !important;
+    color: #b5843b !important;
+    border-radius: 50% !important;
+    width: 65px !important;
+    height: 65px !important;
+  }
+}
+

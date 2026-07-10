@@ -543,7 +543,7 @@ function App() {
               ⚔️
             </span>
             <h1 className="text-2xl font-bold font-display text-gold-light tracking-wide">
-              SMART CAREER ROADMAP
+              SKILLSATHI
             </h1>
             <p className="text-[10px] text-slate-400 uppercase tracking-widest mt-1.5 font-sans">
               {isRegister ? 'Create Guild Account' : 'Enter the Adventurer Guild'}
@@ -710,10 +710,10 @@ function App() {
             </span>
             <div className="leading-tight">
               <span className="font-bold text-slate-100 tracking-wider font-display text-sm block">
-                CAREER GUILD
+                SKILLSATHI
               </span>
               <span className="text-[10px] text-slate-500 uppercase tracking-widest block font-sans mt-0.5">
-                Console Dashboard
+                Career Navigator
               </span>
             </div>
           </div>
