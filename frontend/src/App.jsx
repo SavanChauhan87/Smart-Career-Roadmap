@@ -159,6 +159,8 @@ function App() {
   const [theme, setTheme] = useState('dark');
   const [loginError, setLoginError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isRegister, setIsRegister] = useState(false);
+  const [name, setName] = useState('');
   
   // Game user profile state
   const [userProfile, setUserProfile] = useState({
@@ -465,7 +467,6 @@ function App() {
     }
   };
 
-  // Convert progress width percentage
   const xpPercentage = (userProfile.xp / userProfile.maxXp) * 100;
 
   if (!isLoggedIn) {
@@ -493,7 +494,7 @@ function App() {
               SMART CAREER ROADMAP
             </h1>
             <p className="text-[10px] text-slate-400 uppercase tracking-widest mt-1.5 font-sans">
-              Enter the Adventurer Guild
+              {isRegister ? 'Create Guild Account' : 'Enter the Adventurer Guild'}
             </p>
           </div>
 
@@ -508,31 +509,65 @@ function App() {
             setLoginError('');
             setIsLoading(true);
             try {
-              const data = await api.login(email, password);
-              setUserProfile({
-                id: data.user.id,
-                name: data.user.name,
-                email: data.user.email,
-                level: data.user.level,
-                xp: data.user.xp,
-                maxXp: data.user.maxXp,
-                streak: data.user.streak,
-                badgesEarned: data.user.badgesEarned
-              });
-              setIsLoggedIn(true);
+              if (isRegister) {
+                // Register flow
+                const data = await api.register(name, email, password);
+                setUserProfile({
+                  id: data.user.id,
+                  name: data.user.name,
+                  email: data.user.email,
+                  level: data.user.level,
+                  xp: data.user.xp,
+                  maxXp: data.user.maxXp,
+                  streak: data.user.streak,
+                  badgesEarned: data.user.badgesEarned
+                });
+                setIsLoggedIn(true);
+              } else {
+                // Login flow
+                const data = await api.login(email, password);
+                setUserProfile({
+                  id: data.user.id,
+                  name: data.user.name,
+                  email: data.user.email,
+                  level: data.user.level,
+                  xp: data.user.xp,
+                  maxXp: data.user.maxXp,
+                  streak: data.user.streak,
+                  badgesEarned: data.user.badgesEarned
+                });
+                setIsLoggedIn(true);
+              }
             } catch (err) {
-              setLoginError(err.message || 'Login failed. Is the backend running?');
-              // Fallback: allow mock login if API is unreachable
+              setLoginError(err.message || 'Authentication failed. Is the backend running?');
+              // Fallback: allow mock if API is unreachable
               if (err.message?.includes('Failed to fetch') || err.message?.includes('NetworkError')) {
-                setLoginError('Backend API unreachable — using offline mode.');
+                setLoginError('Backend API unreachable — using offline fallback.');
                 setIsLoggedIn(true);
               }
             } finally {
               setIsLoading(false);
             }
           }} className="space-y-4">
+            {isRegister && (
+              <div className="space-y-1 animate-fadeIn">
+                <label className="text-[10px] text-slate-450 font-sans block font-semibold uppercase tracking-wider">Adventurer Name</label>
+                <div className="relative">
+                  <input 
+                    type="text" 
+                    required
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="E.g., Savan Chauhan"
+                    className="w-full bg-slate-950/60 border border-gold/20 rounded-xl px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-650 focus:outline-none focus:border-gold/60 transition-all font-sans"
+                  />
+                  <span className="absolute right-3.5 top-3 text-slate-500"><User className="w-4 h-4" /></span>
+                </div>
+              </div>
+            )}
+
             <div className="space-y-1">
-              <label className="text-[10px] text-slate-450 font-sans block font-semibold uppercase tracking-wider">Guild Member Email</label>
+              <label className="text-[10px] text-slate-455 font-sans block font-semibold uppercase tracking-wider">Guild Member Email</label>
               <div className="relative">
                 <input 
                   type="email" 
@@ -555,7 +590,7 @@ function App() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••••••"
-                  className="w-full bg-slate-950/60 border border-gold/20 rounded-xl px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-650 focus:outline-none focus:border-gold/60 transition-all font-sans"
+                  className="w-full bg-slate-950/60 border border-gold/20 rounded-xl px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-655 focus:outline-none focus:border-gold/60 transition-all font-sans"
                 />
                 <span className="absolute right-3.5 top-3 text-slate-500"><Lock className="w-4 h-4" /></span>
               </div>
@@ -566,12 +601,30 @@ function App() {
               disabled={isLoading}
               className="w-full mt-2 bg-gradient-to-r from-gold to-amber-500 hover:from-gold-light hover:to-gold text-[#06070F] font-bold font-display tracking-wider py-3 rounded-xl transition-all shadow-lg hover:shadow-[0_0_15px_rgba(255,184,0,0.3)] cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isLoading ? <><Loader2 className="w-4 h-4 animate-spin" /> AUTHENTICATING...</> : <>ENTER GUILD <LogIn className="w-4 h-4" /></>}
+              {isLoading ? (
+                <><Loader2 className="w-4 h-4 animate-spin" /> REGISTERING...</>
+              ) : isRegister ? (
+                <>INITIATE JOURNEY <LogIn className="w-4 h-4" /></>
+              ) : (
+                <>ENTER GUILD <LogIn className="w-4 h-4" /></>
+              )}
             </button>
           </form>
 
+          <div className="mt-4 text-center">
+            <button 
+              onClick={() => {
+                setIsRegister(prev => !prev);
+                setLoginError('');
+              }}
+              className="text-xs text-gold hover:text-gold-light underline transition-all font-sans cursor-pointer bg-transparent border-none"
+            >
+              {isRegister ? 'Already have a guild account? Sign In' : 'New adventurer? Create a Guild Account'}
+            </button>
+          </div>
+
           <div className="mt-6 text-center text-[10px] text-slate-500 border-t border-gold/10 pt-4 font-sans">
-            First login requirement enabled. Enter your credentials to unlock the dashboard.
+            Authentication is required. Access your personalized RPG roadmap console.
           </div>
         </div>
       </div>
