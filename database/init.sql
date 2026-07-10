@@ -156,9 +156,9 @@ INSERT INTO learning_resources (skill_id, title, platform, url, duration, cost) 
 ('a0000000-0000-0000-0000-000000000003', 'React JS crash course - Programming with Mosh', 'YouTube', 'https://www.youtube.com/watch?v=SqcY0GlETPk', '2 hrs', 'Free'),
 ('a0000000-0000-0000-0000-000000000004', 'TypeScript Official Documentation handbook', 'Official Docs', 'https://www.typescriptlang.org/docs/', 'N/A', 'Free');
 
--- Insert Sample User (Savan Chauhan)
+-- Insert Sample User (Savan Chauhan) — password is "password123"
 INSERT INTO users (id, name, email, password_hash, level, xp, streak) VALUES
-('c0000000-0000-0000-0000-000000000001', 'Savan Chauhan', 'savan@guild.com', '$2a$11$e09/1u578...hashed', 7, 2450, 7);
+('c0000000-0000-0000-0000-000000000001', 'Savan Chauhan', 'savan@guild.com', '$2a$11$K1rSbKxqJOu8VJdLqEXVYOWQ4lDn5X0zHfJfGnXPcEaCBf2Kd5g7u', 7, 2450, 7);
 
 -- Insert User Skills levels (matches initial state)
 INSERT INTO user_skills (user_id, skill_id, level) VALUES

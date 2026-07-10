@@ -1,0 +1,26 @@
+## .NET Core
+bin/
+obj/
+*.user
+*.suo
+*.cache
+*.dll
+*.pdb
+
+## Rider / VS
+.idea/
+.vs/
+*.sln.DotSettings.user
+
+## Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+
+## NuGet
+*.nupkg
+project.lock.json
+
+## macOS
+.DS_Store

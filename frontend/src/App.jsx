@@ -10,8 +10,9 @@ import Profile from './views/Profile';
 import { 
   Shield, Target, Award, BookOpen, User, 
   Menu, X, Bell, LogIn, Lock, Mail, Edit3, Map,
-  Sun, Moon
+  Sun, Moon, Loader2
 } from 'lucide-react';
+import * as api from './services/api';
 
 // Static Data definitions
 const initialSkills = [
@@ -152,25 +153,32 @@ function App() {
   const [currentPage, setCurrentPage] = useState('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [selectedRole, setSelectedRole] = useState('Frontend Developer');
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [email, setEmail] = useState('savan@example.com');
+  const [isLoggedIn, setIsLoggedIn] = useState(!!api.getStoredToken());
+  const [email, setEmail] = useState('savan@guild.com');
   const [password, setPassword] = useState('password123');
   const [theme, setTheme] = useState('dark');
+  const [loginError, setLoginError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   
   // Game user profile state
   const [userProfile, setUserProfile] = useState({
-    name: 'Savan Chauhan',
-    email: 'savan@example.com',
-    level: 7,
-    xp: 2450,
+    id: null,
+    name: 'Adventurer',
+    email: '',
+    level: 1,
+    xp: 0,
     maxXp: 3000,
-    streak: 7,
-    badgesEarned: 3
+    streak: 0,
+    badgesEarned: 0
   });
 
-  // User Skill matrices state
+  // User Skill matrices state (will be fetched from API)
   const [userSkills, setUserSkills] = useState(initialSkills);
-  const [unlockedAchievements, setUnlockedAchievements] = useState(['streak_3', 'target_chosen', 'first_quest']);
+  const [unlockedAchievements, setUnlockedAchievements] = useState([]);
+  // Career roles from API
+  const [careerRolesData, setCareerRolesData] = useState(careerRoles);
+  // Resources from API
+  const [resourcesData, setResourcesData] = useState(resourcesCatalog);
   
   // Dynamic Attributes derived from skill levels
   const [attributes, setAttributes] = useState({
@@ -198,30 +206,132 @@ function App() {
     }));
   }, [userSkills]);
 
-  // Skill updates math engine
-  const updateSkillLevel = (skillName, newLevel) => {
-    setUserSkills(prevSkills => {
-      const updated = prevSkills.map(s => {
-        if (s.name === skillName) {
-          // Calculate difference in levels
-          const diff = newLevel - s.level;
-          if (diff > 0) {
-            // Reward XP: 250 XP per skill rating level
-            awardXp(diff * 250);
-          }
-          return { ...s, level: newLevel };
+  // ── Fetch all data from API after login ──────────────────
+  useEffect(() => {
+    if (!isLoggedIn) return;
+    const userId = api.getStoredUserId();
+    if (!userId) return;
+
+    const loadData = async () => {
+      try {
+        // Fetch user profile
+        const userData = await api.getUser(userId);
+        if (userData) {
+          setUserProfile({
+            id: userData.id,
+            name: userData.name,
+            email: userData.email,
+            level: userData.level,
+            xp: userData.xp,
+            maxXp: userData.maxXp,
+            streak: userData.streak,
+            badgesEarned: userData.badgesEarned
+          });
         }
-        return s;
-      });
 
-      // Verify Level Achievement badge triggers
-      const activeCount = updated.filter(s => s.level > 0).length;
-      if (activeCount >= 10 && !unlockedAchievements.includes('skills_10')) {
-        unlockAchievement('skills_10');
+        // Fetch user skills
+        const skillsData = await api.getUserSkills(userId);
+        if (skillsData && skillsData.length > 0) {
+          setUserSkills(skillsData.map(s => ({
+            id: s.id,
+            name: s.name,
+            level: s.level,
+            category: s.category
+          })));
+        }
+
+        // Fetch career roles
+        const careersData = await api.getCareers();
+        if (careersData && careersData.length > 0) {
+          setCareerRolesData(careersData.map(r => ({
+            id: r.id,
+            name: r.name,
+            demand: r.demand,
+            salary: r.salary,
+            requirements: r.requirements
+          })));
+        }
+
+        // Fetch active quest
+        const questData = await api.getActiveQuest(userId);
+        if (questData && questData.roleName) {
+          setSelectedRole(questData.roleName);
+        }
+
+        // Fetch achievements
+        const achievementsData = await api.getAchievements(userId);
+        if (achievementsData) {
+          setUnlockedAchievements(achievementsData.map(a => a.achievementKey));
+        }
+
+        // Fetch resources
+        const resourcesResult = await api.getResources();
+        if (resourcesResult && Object.keys(resourcesResult).length > 0) {
+          // Transform API response to match frontend shape
+          const transformed = {};
+          for (const [skillName, items] of Object.entries(resourcesResult)) {
+            transformed[skillName] = items.map(r => ({
+              title: r.title,
+              platform: r.platform,
+              url: r.url,
+              time: r.duration || 'N/A',
+              cost: r.cost || 'Free',
+              type: r.platform === 'YouTube' ? 'video' : r.platform === 'Official Docs' ? 'article' : 'course'
+            }));
+          }
+          setResourcesData(prev => ({ ...prev, ...transformed }));
+        }
+      } catch (err) {
+        console.error('Failed to load data from API:', err);
+        // Fallback: keep mock data if API is unreachable
       }
+    };
 
-      return updated;
-    });
+    loadData();
+  }, [isLoggedIn]);
+
+  // ── Skill updates — calls API then syncs local state ────
+  const updateSkillLevel = async (skillName, newLevel) => {
+    // Find the skill's ID for the API call
+    const skill = userSkills.find(s => s.name === skillName);
+    const userId = api.getStoredUserId();
+
+    // Optimistic local update first
+    setUserSkills(prev => prev.map(s => s.name === skillName ? { ...s, level: newLevel } : s));
+
+    try {
+      if (skill?.id && userId) {
+        const result = await api.updateSkillLevel(userId, skill.id, newLevel);
+        // Sync profile with server-calculated XP/Level
+        if (result?.user) {
+          setUserProfile(prev => ({
+            ...prev,
+            xp: result.user.xp,
+            level: result.user.level,
+            maxXp: result.user.maxXp,
+            badgesEarned: result.user.badgesEarned
+          }));
+        }
+      } else {
+        // Fallback: client-side XP calc if no API
+        const oldSkill = userSkills.find(s => s.name === skillName);
+        const diff = newLevel - (oldSkill?.level || 0);
+        if (diff > 0) awardXp(diff * 250);
+      }
+    } catch (err) {
+      console.error('Skill update API failed:', err);
+      // Fallback: client-side XP calc
+      const oldSkill = userSkills.find(s => s.name === skillName);
+      const diff = newLevel - (oldSkill?.level || 0);
+      if (diff > 0) awardXp(diff * 250);
+    }
+
+    // Check achievements
+    const updatedSkills = userSkills.map(s => s.name === skillName ? { ...s, level: newLevel } : s);
+    const activeCount = updatedSkills.filter(s => s.level > 0).length;
+    if (activeCount >= 10 && !unlockedAchievements.includes('skills_10')) {
+      unlockAchievement('skills_10');
+    }
   };
 
   const awardXp = (amount) => {
@@ -235,35 +345,55 @@ function App() {
         newLvl += 1;
         newMaxXp = Math.round(newMaxXp * 1.25);
         
-        // Trigger Level achievement
         if (newLvl >= 10 && !unlockedAchievements.includes('master_level')) {
           unlockAchievement('master_level');
         }
       }
 
-      return {
-        ...prev,
-        xp: newXp,
-        level: newLvl,
-        maxXp: newMaxXp
-      };
+      return { ...prev, xp: newXp, level: newLvl, maxXp: newMaxXp };
     });
   };
 
-  const unlockAchievement = (id) => {
-    setUnlockedAchievements(prev => {
-      if (prev.includes(id)) return prev;
-      
-      setUserProfile(p => ({ ...p, badgesEarned: p.badgesEarned + 1 }));
-      return [...prev, id];
-    });
-  };
-
-  const selectTargetRole = (roleName) => {
-    setSelectedRole(roleName);
-    awardXp(200); // Small reward for updating strategy target
+  const unlockAchievement = async (id) => {
+    if (unlockedAchievements.includes(id)) return;
     
-    // Unlock target chosen badge
+    setUnlockedAchievements(prev => [...prev, id]);
+    setUserProfile(p => ({ ...p, badgesEarned: p.badgesEarned + 1 }));
+
+    try {
+      const userId = api.getStoredUserId();
+      if (userId) await api.unlockAchievement(userId, id);
+    } catch (err) {
+      console.error('Achievement unlock API failed:', err);
+    }
+  };
+
+  const selectTargetRole = async (roleName) => {
+    setSelectedRole(roleName);
+
+    try {
+      const userId = api.getStoredUserId();
+      const role = careerRolesData.find(r => r.name === roleName);
+      if (userId && role?.id) {
+        await api.setActiveQuest(userId, role.id);
+        // Refresh profile to get updated XP from server
+        const userData = await api.getUser(userId);
+        if (userData) {
+          setUserProfile(prev => ({
+            ...prev,
+            xp: userData.xp,
+            level: userData.level,
+            maxXp: userData.maxXp
+          }));
+        }
+      } else {
+        awardXp(200);
+      }
+    } catch (err) {
+      console.error('Quest select API failed:', err);
+      awardXp(200); // Fallback
+    }
+
     if (!unlockedAchievements.includes('target_chosen')) {
       unlockAchievement('target_chosen');
     }
@@ -277,7 +407,7 @@ function App() {
             userProfile={userProfile} 
             selectedRole={selectedRole}
             userSkills={userSkills}
-            careerRoles={careerRoles}
+            careerRoles={careerRolesData}
             setPage={setCurrentPage}
           />
         );
@@ -291,7 +421,7 @@ function App() {
       case 'careers':
         return (
           <Careers 
-            careerRoles={careerRoles}
+            careerRoles={careerRolesData}
             selectedRole={selectedRole}
             userSkills={userSkills}
             selectTargetRole={selectTargetRole}
@@ -302,14 +432,14 @@ function App() {
           <Roadmap 
             selectedRole={selectedRole}
             userSkills={userSkills}
-            careerRoles={careerRoles}
-            resourcesCatalog={resourcesCatalog}
+            careerRoles={careerRolesData}
+            resourcesCatalog={resourcesData}
           />
         );
       case 'resources':
         return (
           <Resources 
-            resourcesCatalog={resourcesCatalog}
+            resourcesCatalog={resourcesData}
           />
         );
       case 'achievements':
@@ -331,7 +461,7 @@ function App() {
           />
         );
       default:
-        return <Dashboard userProfile={userProfile} selectedRole={selectedRole} userSkills={userSkills} careerRoles={careerRoles} setPage={setCurrentPage} />;
+        return <Dashboard userProfile={userProfile} selectedRole={selectedRole} userSkills={userSkills} careerRoles={careerRolesData} setPage={setCurrentPage} />;
     }
   };
 
@@ -367,7 +497,40 @@ function App() {
             </p>
           </div>
 
-          <form onSubmit={(e) => { e.preventDefault(); setIsLoggedIn(true); }} className="space-y-4">
+          {loginError && (
+            <div className="text-red-400 text-xs text-center bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2 mb-2 font-sans">
+              {loginError}
+            </div>
+          )}
+
+          <form onSubmit={async (e) => {
+            e.preventDefault();
+            setLoginError('');
+            setIsLoading(true);
+            try {
+              const data = await api.login(email, password);
+              setUserProfile({
+                id: data.user.id,
+                name: data.user.name,
+                email: data.user.email,
+                level: data.user.level,
+                xp: data.user.xp,
+                maxXp: data.user.maxXp,
+                streak: data.user.streak,
+                badgesEarned: data.user.badgesEarned
+              });
+              setIsLoggedIn(true);
+            } catch (err) {
+              setLoginError(err.message || 'Login failed. Is the backend running?');
+              // Fallback: allow mock login if API is unreachable
+              if (err.message?.includes('Failed to fetch') || err.message?.includes('NetworkError')) {
+                setLoginError('Backend API unreachable — using offline mode.');
+                setIsLoggedIn(true);
+              }
+            } finally {
+              setIsLoading(false);
+            }
+          }} className="space-y-4">
             <div className="space-y-1">
               <label className="text-[10px] text-slate-450 font-sans block font-semibold uppercase tracking-wider">Guild Member Email</label>
               <div className="relative">
@@ -400,9 +563,10 @@ function App() {
 
             <button 
               type="submit" 
-              className="w-full mt-2 bg-gradient-to-r from-gold to-amber-500 hover:from-gold-light hover:to-gold text-[#06070F] font-bold font-display tracking-wider py-3 rounded-xl transition-all shadow-lg hover:shadow-[0_0_15px_rgba(255,184,0,0.3)] cursor-pointer flex items-center justify-center gap-2"
+              disabled={isLoading}
+              className="w-full mt-2 bg-gradient-to-r from-gold to-amber-500 hover:from-gold-light hover:to-gold text-[#06070F] font-bold font-display tracking-wider py-3 rounded-xl transition-all shadow-lg hover:shadow-[0_0_15px_rgba(255,184,0,0.3)] cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              ENTER GUILD <LogIn className="w-4 h-4" />
+              {isLoading ? <><Loader2 className="w-4 h-4 animate-spin" /> AUTHENTICATING...</> : <>ENTER GUILD <LogIn className="w-4 h-4" /></>}
             </button>
           </form>
 
